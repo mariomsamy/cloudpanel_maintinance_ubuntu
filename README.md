@@ -1,178 +1,278 @@
-It seems like you're sharing a link to a raw script hosted on GitHub. However, the link you provided is incomplete or malformed (`https://` should be `https://`). Here's the corrected link:
+# CloudPanel Server Maintenance Script
 
-```
-https://raw.githubusercontent.com/MarioMSamy/cloudpanel_maintinance_ubuntu/main/server_maintenance.sh
-```
+A **safe, production-ready server maintenance script** designed specifically for  
+**CloudPanel-supported Linux distributions (Debian / Ubuntu family)**.
 
-If this is a script you'd like to document or use, I can help you create a `README.md` file for it or provide instructions on how to use it. Let me know how I can assist! 
-
-For now, here’s a general template for a `README.md` file that you can use for your script:
+This script automates system updates, optional security hardening, and **controlled PHP-FPM management** with **strong safety guardrails** to prevent accidental server outages.
 
 ---
 
-# Server Maintenance Script
+## 🚀 Key Highlights
 
-This script automates server maintenance tasks such as updating, upgrading, and improving security. It also allows the user to disable specific PHP versions and provides an option to reboot the server after completing the tasks.
+- ✅ CloudPanel-safe by design
+- ✅ Prevents disabling all PHP versions
+- ✅ Supports re-enabling disabled PHP-FPM services
+- ✅ Interactive & guarded destructive actions
+- ✅ Full logging & rollback awareness
+- ✅ Production friendly – no risky defaults
 
-## Features
+---
 
-1. **Auto Update and Upgrade**:
-   - Updates the package list.
-   - Upgrades installed packages.
-   - Performs a distribution upgrade.
-   - Removes unused packages and cleans up the package cache.
+## 📌 Table of Contents
 
-2. **Security Improvements**:
-   - Enables automatic security updates using `unattended-upgrades`.
-   - Configures UFW (Uncomplicated Firewall) to allow SSH and enable the firewall.
-   - Installs and enables `fail2ban` to prevent brute-force attacks.
+1. [Features](#features)
+2. [Supported Systems](#supported-systems)
+3. [Installation](#installation)
+4. [How to Use](#how-to-use)
+   - [Basic Usage](#basic-usage)
+   - [Security Hardening](#security-hardening)
+   - [PHP-FPM Management](#php-fpm-management)
+   - [Reboot Options](#reboot-options)
+5. [Advanced Configuration](#advanced-configuration)
+6. [Safety & Guardrails](#safety--guardrails)
+7. [Logs & State Files](#logs--state-files)
+8. [Troubleshooting](#troubleshooting)
+9. [License](#license)
+10. [Support](#support)
 
-3. **Disable PHP Versions**:
-   - Provides a menu to select which PHP versions to disable.
-   - Allows the user to disable all PHP versions at once.
-   - Uses `systemctl` to stop and disable the selected PHP versions.
+---
 
-4. **Reboot or Exit**:
-   - Prompts the user to reboot the server or exit after completing the tasks.
+## ✨ Features
 
-5. **Root Check**:
-   - Ensures the script is run as root for proper execution.
+### 1️⃣ System Maintenance
+- `apt update`
+- `apt upgrade`
+- `apt dist-upgrade`
+- `apt autoremove`
+- `apt autoclean`
 
-## Supported PHP Versions
+Ensures the system is fully up-to-date and clean.
 
-The script supports the following PHP versions for disabling:
-- php7.1-fpm
-- php7.2-fpm
-- php7.3-fpm
-- php7.4-fpm
-- php8.0-fpm
-- php8.1-fpm
-- php8.2-fpm
-- php8.3-fpm
-- php8.4-fpm
+---
 
-## Instructions
+### 2️⃣ Optional Security Hardening
+- Automatic security updates (`unattended-upgrades`)
+- Firewall protection with **UFW**
+- Brute-force attack protection using **fail2ban**
 
-### Prerequisites
-- The script must be run as root.
-- Ensure you have a backup of your server before running the script.
+> All security steps are **optional** and require confirmation.
 
-### Installation
-1. Download the script:
-   ```bash
-   wget https://raw.githubusercontent.com/MarioMSamy/cloudpanel_maintinance_ubuntu/main/server_maintenance.sh
-   ```
+---
 
-2. Make the script executable:
-   ```bash
-   chmod +x server_maintenance.sh
-   ```
+### 3️⃣ Safe PHP-FPM Management (CloudPanel Aware)
 
-### Usage
-1. Run the script as root:
-   ```bash
-   sudo ./server_maintenance.sh
-   ```
-   or switch to the root user and run it:
-   ```bash
-   sudo su
-   ./server_maintenance.sh
-   ```
+- Automatically detects installed `php*-fpm` services
+- Disable **selected** PHP versions only
+- ❌ Impossible to disable **all PHP-FPM versions**
+- Stores disabled services in a **persistent state file**
+- Allows **safe re-enable** of disabled PHP versions
+- Blocked in non-interactive mode for safety
 
-2. Follow the prompts:
-   - The script will update and upgrade the server.
-   - It will improve security by enabling automatic updates, configuring UFW, and installing `fail2ban`.
-   - You will be asked if you want to disable PHP versions. If yes, select the versions to disable (comma-separated list) or choose to disable all.
-   - After completing the tasks, you will be prompted to reboot the server or exit.
+📁 State tracking file:
+```
 
-### Example Usage
+/var/lib/recipe-codes/disabled-php-fpm-services.txt
 
-#### Scenario 1: Disable Specific PHP Versions
-1. Run the script:
-   ```bash
-   sudo ./server_maintenance.sh
-   ```
-2. When prompted, enter:
-   ```
-   Do you want to disable PHP versions? (y/n): y
-   Select PHP versions to disable (comma-separated list, e.g., 1,2,3): 2,5,7
-   ```
-3. The script will disable:
-   - `php7.2-fpm`
-   - `php8.0-fpm`
-   - `php8.2-fpm`
+```
 
-#### Scenario 2: Disable All PHP Versions
-1. Run the script:
-   ```bash
-   sudo ./server_maintenance.sh
-   ```
-2. When prompted, enter:
-   ```
-   Do you want to disable PHP versions? (y/n): y
-   Select PHP versions to disable (comma-separated list, e.g., 1,2,3): 10
-   ```
-3. The script will disable all PHP versions listed in the `php_versions` array.
+---
 
-#### Scenario 3: Reboot the Server
-1. Run the script:
-   ```bash
-   sudo ./server_maintenance.sh
-   ```
-2. Complete the server maintenance tasks.
-3. When prompted:
-   ```
-   Do you want to reboot the server now? (y/n): y
-   ```
-4. The server will reboot.
+### 4️⃣ Logging & Error Handling
+- All actions logged with timestamps
+- Errors are trapped with line numbers
+- Log file:
+```
 
-#### Scenario 4: Exit Without Rebooting
-1. Run the script:
-   ```bash
-   sudo ./server_maintenance.sh
-   ```
-2. Complete the server maintenance tasks.
-3. When prompted:
-   ```
-   Do you want to reboot the server now? (y/n): n
-   ```
-4. The script will exit with the message:
-   ```
-   Exiting without rebooting. Have a great day!
-   ```
+/var/log/recipe-codes-server-maintenance.log
 
-## Customization
+````
 
-### Adding or Removing PHP Versions
-To add or remove PHP versions, edit the `php_versions` associative array in the script:
+---
+
+## 🖥 Supported Systems
+
+This script supports **CloudPanel-compatible Linux distributions**:
+
+- Ubuntu 20.04 / 22.04 / 24.04
+- Debian 10 / 11 / 12
+- Any **APT-based CloudPanel installation**
+
+❌ RPM-based systems are intentionally blocked for safety.
+
+---
+
+## 📥 Installation
+
+### Step 1 – Download Script
 ```bash
-declare -A php_versions=(
-    ["1"]="php7.1-fpm"
-    ["2"]="php7.2-fpm"
-    ["3"]="php7.3-fpm"
-    ["4"]="php7.4-fpm"
-    ["5"]="php8.0-fpm"
-    ["6"]="php8.1-fpm"
-    ["7"]="php8.2-fpm"
-    ["8"]="php8.3-fpm"
-    ["9"]="php8.4-fpm"
-)
+wget https://raw.githubusercontent.com/mariomsamy/cloudpanel_maintinance_ubuntu/main/server_maintenance.sh
+````
+
+### Step 2 – Make Executable
+
+```bash
+chmod +x server_maintenance.sh
 ```
 
-### Changing Security Settings
-- To modify UFW rules, edit the `ufw allow ssh` line in the `improve_security` function.
-- To configure `fail2ban` further, edit the `/etc/fail2ban/jail.local` file after installation.
+---
 
-## License
+## ▶ How to Use
 
-This script is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+### Basic Usage
+
+Run the script as root:
+
+```bash
+sudo ./server_maintenance.sh
+```
+
+Or:
+
+```bash
+sudo su
+./server_maintenance.sh
+```
+
+You will be guided step-by-step.
 
 ---
 
-## Support
+### 🔐 Security Hardening
 
-For issues or feature requests, please open an issue on the [GitHub repository](https://github.com/MarioMSamy/cloudpanel_maintinance_ubuntu) or contact the maintainer.
+You will be prompted:
+
+```
+Apply security improvements? (y/n)
+```
+
+If **Yes**, the script will:
+
+* Enable automatic updates
+* Configure UFW safely (SSH allowed)
+* Install and enable fail2ban
 
 ---
 
-Let me know if you need further assistance!
+### 🐘 PHP-FPM Management
+
+You will be prompted:
+
+```
+Do you want to manage PHP-FPM services? (y/n)
+```
+
+#### Options Available:
+
+1. **Disable selected PHP versions**
+2. **Re-enable previously disabled versions**
+3. **View detected PHP-FPM services**
+
+⚠ **Critical Protection**
+
+* Script **refuses** to disable all PHP-FPM services
+* Requires multi-step confirmation
+
+---
+
+### 🔄 Reboot Options
+
+At the end:
+
+```
+Maintenance completed. Reboot the server now? (y/n)
+```
+
+* `y` → reboot
+* `n` → exit safely
+
+---
+
+## ⚙ Advanced Configuration
+
+You can control behavior using environment variables:
+
+| Variable           | Purpose                                  |
+| ------------------ | ---------------------------------------- |
+| `NONINTERACTIVE=1` | Reduce prompts (PHP management disabled) |
+| `ASSUME_YES=1`     | Auto-confirm prompts (⚠ dangerous)       |
+| `APPLY_SECURITY=0` | Skip security hardening                  |
+| `MANAGE_PHP=0`     | Skip PHP-FPM management                  |
+
+Example:
+
+```bash
+APPLY_SECURITY=0 MANAGE_PHP=0 sudo ./server_maintenance.sh
+```
+
+---
+
+## 🛡 Safety & Guardrails
+
+This script includes **strong safeguards**:
+
+* ❌ No “Disable All PHP” option
+* ❌ PHP actions blocked in non-interactive mode
+* ❌ Cannot lock yourself out via firewall
+* ✅ CloudPanel compatibility preserved
+* ✅ Rollback path via recorded state
+
+⚠ Disabling PHP incorrectly can break:
+
+* CloudPanel UI
+* Websites
+* PHP applications
+
+This script is intentionally conservative.
+
+---
+
+## 🗂 Logs & State Files
+
+### Main Log
+
+```
+/var/log/recipe-codes-server-maintenance.log
+```
+
+### PHP Disabled State
+
+```
+/var/lib/recipe-codes/disabled-php-fpm-services.txt
+```
+
+---
+
+## 🛠 Troubleshooting
+
+### Script exits immediately
+
+* Ensure you are running as `root`
+* Check log file for error details
+
+### PHP-FPM missing
+
+* CloudPanel may not use PHP-FPM yet
+* Script will safely skip
+
+### Locked out via firewall?
+
+* UFW enable requires confirmation
+* SSH rule is always added before enabling
+
+---
+
+## 📜 License
+
+© 2023–2026 **Recipe Codes**
+All rights reserved.
+
+---
+
+## 🧑‍💻 Support
+
+* GitHub Repository:
+  [https://github.com/mariomsamy/cloudpanel_maintinance_ubuntu](https://github.com/mariomsamy/cloudpanel_maintinance_ubuntu)
+* Issues & Requests:
+  [https://github.com/mariomsamy/cloudpanel_maintinance_ubuntu/issues](https://github.com/mariomsamy/cloudpanel_maintinance_ubuntu/issues)
+* Maintainer: **Mario M. Samy**
+* Company: **Recipe Codes**
