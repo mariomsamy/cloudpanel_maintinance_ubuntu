@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Recipe Codes - Server Maintenance Script
-# Copyright (c) 2023 Recipe Codes. All rights reserved.
+# Copyright (c) 2026 Recipe Codes. All rights reserved.
 
 # Check if the script is running as root
 if [[ $EUID -ne 0 ]]; then
